@@ -12,4 +12,6 @@ class ComputingProcess[T1, T2](input: T1, output: T2) {
 }
 
 object ComputingProcess {
+  def constant[T2](value: T2): ComputingProcess[Unit, T2] = new ComputingProcess[Unit,T2](None, value)
+  def function[T1, T2](f: Function[T1, T2]) = new ComputingProcess[Unit, T2](Unit,f())
 }
