@@ -1,0 +1,14 @@
+{
+  "name": "WI for CCAPI",
+  "description": "Web interface for composite calculations"
+  "version": "0.0.1",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+
+  },
+  "scripts": {
+    "start": ""
+  }
+}
