@@ -5,4 +5,4 @@
     </div>
 </template>
 <script src="./App.ts" lang="ts"></script>
-<style src="./App.scss"></style>
+<style src="./App.css"></style>
