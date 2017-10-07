@@ -10,7 +10,7 @@ module.exports = {
     filename: "bundle.js"
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.ts', '.js']
   },
   devtool: 'source-map',
   module: {
@@ -26,16 +26,12 @@ module.exports = {
         }
       },
       {
-        test: /\.tsx?$/,
+        test: /\.ts?$/,
         loader: 'ts-loader',
         options: {
           configFile: 'tsconfig.json',
           appendTsSuffixTo: [/\.vue$/]
         },
-      },
-      {
-        test: /\.tsx$/,
-        loader: 'babel-loader'
       },
       {
         test: /\.js$/,

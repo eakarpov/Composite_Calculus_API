@@ -1,8 +1,8 @@
 <template>
     <div class='App'>
-        <h1>{{msg}}</h1>
-        <p>Something is here</p>
+        <h1>{{title}}</h1>
+        <calculation></calculation>
     </div>
 </template>
-<script src="./App.tsx" lang="ts"></script>
+<script src="./App.ts" lang="ts"></script>
 <style src="./App.scss"></style>
