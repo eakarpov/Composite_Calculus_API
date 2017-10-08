@@ -2,23 +2,27 @@ package CCAPI
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 
+import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
 
 object Server {
   def startServer() {
-    implicit val system = ActorSystem("my-system")
-    implicit val materializer = ActorMaterializer()
+    implicit val system: ActorSystem = ActorSystem("calculus-system")
+    implicit val materializer: ActorMaterializer = ActorMaterializer()
     // needed for the future flatMap/onComplete in the end
-    implicit val executionContext = system.dispatcher
+    implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
     val route =
-      path("hello") {
+      path("complete") {
         get {
-          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
+          parameter("expression") { expression => {
+            println(expression)
+            complete(StatusCodes.OK)
+          }}
         }
       }
 
