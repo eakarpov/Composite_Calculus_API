@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "dom",
+      "es5",
+      "es2015.promise"
+    ],
+    "outDir": "build"
+  },
+  "files": [
+    "server.ts",
+    "webpack.config.ts"
+  ]
+}

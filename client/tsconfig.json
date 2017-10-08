@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "dom",
+      "es5",
+      "es2015.promise"
+    ],
+    "outDir": "build",
+    "rootDir": "src",
+    "jsx": "react",
+    "jsxFactory": "h",
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "server.ts",
+    "webpack.config.ts"
+  ]
+}
