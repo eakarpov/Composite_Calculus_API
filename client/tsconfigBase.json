@@ -6,13 +6,9 @@
       "es5",
       "es2015.promise"
     ],
-    "outDir": "build",
-    "rootDir": "src",
-    "jsx": "react",
-    "jsxFactory": "h",
-    "experimentalDecorators": true
+    "outDir": "build"
   },
-  "exclude": [
+  "files": [
     "server.ts",
     "webpack.config.ts"
   ]

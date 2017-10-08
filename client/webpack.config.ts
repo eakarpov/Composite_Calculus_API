@@ -1,6 +1,6 @@
-var path = require("path");
+import * as path from "path";
 
-module.exports = {
+export default {
   entry: {
     app: ["./src/app/init.ts"]
   },
