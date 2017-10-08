@@ -1,5 +1,7 @@
 import * as path from "path";
-export default {
+import * as webpack from "webpack";
+
+const webpackConfig: webpack.Configuration = {
   entry: {
     app: ["./src/app/init.ts"]
   },
@@ -42,3 +44,5 @@ export default {
     ]
   }
 };
+
+export default webpackConfig;

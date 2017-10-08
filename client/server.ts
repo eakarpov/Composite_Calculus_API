@@ -6,8 +6,8 @@ import * as webpackHotMiddleware from "webpack-hot-middleware";
 import config from "./webpack.config";
 import * as path from "path";
 
-const app: express.Application  = express();
-const compiler = webpack(config);
+const app: express.Application = express();
+const compiler: webpack.Compiler = webpack(config);
 
 app.use(webpackMiddleware(compiler, {
   publicPath: config.output.publicPath,
