@@ -1,5 +1,5 @@
 package CCAPI.applicative
 
 trait CompositeComputingProcess {
-  val constituents: List[ComputingProcess]
+  val constituents: List[Constituent]
 }

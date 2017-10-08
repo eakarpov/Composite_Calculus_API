@@ -1,19 +1,8 @@
 package CCAPI.applicative
 
-trait ComputingProcess {
-  def compute(value: Any): Any
-}
-
-class ComputingProcess[T1, T2](input: T1, output: T2) {
-  def compute(value: T1): T2 = {
-    ???
-  }
-  def constant[T2](value: T2): ComputingProcess[Unit, T2] = new ComputingProcess[Unit,T2](Unit, value)
-  def compose[T1, T2, T3](f1: Function[T1, T2], f2: Function[T2, T3]) = {
-
-  }
-}
-
-object ComputingProcess {
-  def constant[T2](value: T2): ComputingProcess[Unit, T2] = new ComputingProcess[Unit,T2](Unit, value)
+abstract class ComputingProcess[T1, T2](input: T1, output: T2) {
+  def Constant[R](cons: R): ComputingProcess[Unit, R]
+  def Function[R1, R2](func: R1 => R2): ComputingProcess[R1, R2]
+  def Compose[R1, R2, R3](func1: R2 => R3, func2: R1 => R2): ComputingProcess[R1, R3]
+  def Pairing[R1, R2, R3](func1: R1 => R2, func2: R1 => R3): ComputingProcess[R1, (R2, R3)]
 }
