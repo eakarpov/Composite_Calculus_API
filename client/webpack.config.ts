@@ -1,5 +1,4 @@
 import * as path from "path";
-
 export default {
   entry: {
     app: ["./src/app/init.ts"]
@@ -32,11 +31,6 @@ export default {
           configFile: 'tsconfig.json',
           appendTsSuffixTo: [/\.vue$/]
         },
-      },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/
       },
       {
         test: /\.scss$/,

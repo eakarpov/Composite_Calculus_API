@@ -1,10 +1,10 @@
 import * as express from "express";
 import * as webpack from "webpack";
 import * as webpackMiddleware from "webpack-dev-middleware";
-import * as path from "path";
 import * as webpackHotMiddleware from "webpack-hot-middleware";
 
 import config from "./webpack.config";
+import * as path from "path";
 
 const app: express.Application  = express();
 const compiler = webpack(config);

@@ -3,8 +3,6 @@
   "description": "Web interface for composite calculations",
   "version": "0.0.1",
   "dependencies": {
-    "jade": "^1.11.0",
-    "path": "^0.12.7",
     "vue": "^2.4.4",
     "vue-class-component": "^5.0.2",
     "vuex": "^2.4.1"
@@ -12,12 +10,6 @@
   "devDependencies": {
     "@types/express": "^4.0.37",
     "@types/node": "^8.0.33",
-    "babel": "^6.23.0",
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-vue-jsx": "^3.5.0",
-    "babel-preset-env": "^1.6.0",
     "css-loader": "^0.28.7",
     "express": "^4.16.1",
     "ts-loader": "^2.3.7",
@@ -27,21 +19,6 @@
     "webpack": "^3.6.0",
     "webpack-dev-middleware": "^1.12.0",
     "webpack-hot-middleware": "^2.19.1"
-  },
-  "babel": {
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "node": true
-          }
-        }
-      ]
-    ],
-    "plugins": [
-      "transform-vue-jsx"
-    ]
   },
   "scripts": {
     "start": "tsc -p tsconfigBase.json && node build/server.js"
