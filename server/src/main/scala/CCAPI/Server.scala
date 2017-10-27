@@ -1,5 +1,6 @@
 package CCAPI
 
+import CCAPI.parser.ExpressionParser
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
@@ -8,6 +9,7 @@ import akka.stream.ActorMaterializer
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
+import scala.util.{Failure, Success}
 
 object Server {
   def startServer() {
@@ -17,11 +19,19 @@ object Server {
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
     val route =
-      path("complete") {
+      path("calculate") {
         get {
           parameter("expression") { expression => {
-            println(expression)
-            complete(StatusCodes.OK)
+            println(s"expression we get from client: $expression")
+            val parser = new ExpressionParser(expression)
+            parser.parseExpression() match {
+              case Success(parsed) =>
+                println(s"parsed expr: $parsed")
+                complete(StatusCodes.OK)
+              case Failure(error) =>
+                println(s"error: $error")
+                complete(StatusCodes.BadRequest)
+            }
           }}
         }
       }
