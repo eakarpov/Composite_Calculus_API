@@ -12,7 +12,7 @@ import scala.io.StdIn
 import scala.util.{Failure, Success}
 
 object Server {
-  def startServer() {
+  def startServer(): Unit = {
     implicit val system: ActorSystem = ActorSystem("calculus-system")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
     // needed for the future flatMap/onComplete in the end
@@ -30,7 +30,7 @@ object Server {
                 complete(StatusCodes.OK)
               case Failure(error) =>
                 println(s"error: $error")
-                complete(StatusCodes.BadRequest, error)
+                complete(StatusCodes.BadRequest -> error)
             }
           }}
         }
