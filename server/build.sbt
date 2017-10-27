@@ -1,7 +1,7 @@
 name := "calculus_api_server"
 version := "0.1"
 scalaVersion := "2.12.3"
-mainClass := Some("CCAPI.Main")
+mainClass in (Compile, run) := Some("CCAPI.Main")
 
 scalacOptions ++= Seq(
   "-deprecation",                      // Emit warning and location for usages of deprecated APIs.

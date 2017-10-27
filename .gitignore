@@ -4,3 +4,4 @@ server/project/target/
 server/target/
 client/node_modules/
 client/build/
+target/
