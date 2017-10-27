@@ -30,7 +30,7 @@ object Server {
                 complete(StatusCodes.OK)
               case Failure(error) =>
                 println(s"error: $error")
-                complete(StatusCodes.BadRequest)
+                complete(StatusCodes.BadRequest, error)
             }
           }}
         }
