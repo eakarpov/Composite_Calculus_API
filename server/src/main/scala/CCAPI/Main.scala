@@ -1,5 +1,5 @@
 package CCAPI
 
 object Main extends App {
-  Server.startServer()
+  Server.startServer("localhost", 8080)
 }

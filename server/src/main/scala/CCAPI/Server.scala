@@ -2,46 +2,42 @@ package CCAPI
 
 import CCAPI.parser.ExpressionParser
 import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.Directives._
-import akka.stream.ActorMaterializer
+import akka.http.scaladsl.server.{HttpApp, Route}
+import akka.{Done, pattern}
 
-import scala.concurrent.ExecutionContextExecutor
-import scala.io.StdIn
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
-object Server {
-  def startServer(): Unit = {
-    implicit val system: ActorSystem = ActorSystem("calculus-system")
-    implicit val materializer: ActorMaterializer = ActorMaterializer()
-    // needed for the future flatMap/onComplete in the end
-    implicit val executionContext: ExecutionContextExecutor = system.dispatcher
+object Server extends HttpApp {
 
-    val route =
-      path("calculate") {
-        get {
-          parameter("expression") { expression => {
-            println(s"expression we get from client: $expression")
-            val parser = new ExpressionParser(expression)
-            parser.parseExpression() match {
-              case Success(parsed) =>
-                println(s"parsed expr: $parsed")
-                complete(StatusCodes.OK)
-              case Failure(error) =>
-                println(s"error: $error")
-                complete(StatusCodes.BadRequest -> error)
-            }
-          }}
+  override protected def routes: Route =
+    path("calculate") {
+      get {
+        parameter("expression") { expression => {
+          println(s"expression we get from client: $expression")
+          val parser = new ExpressionParser(expression)
+          parser.parseExpression() match {
+            case Success(parsed) =>
+              println(s"parsed expres: $parsed")
+              complete(StatusCodes.OK)
+            case Failure(error) =>
+              println(s"error: $error")
+              complete(StatusCodes.BadRequest -> error)
+          }
+        }
         }
       }
+    }
 
-    val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
-
-    println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
-    StdIn.readLine() // let it run until user presses return
-    bindingFuture
-      .flatMap(_.unbind()) // trigger unbinding from the port
-      .onComplete(_ => system.terminate()) // and shutdown when done
+  override protected def postHttpBindingFailure(cause: Throwable): Unit = {
+    println(s"The server could not be started due to $cause")
   }
+
+  override def waitForShutdownSignal(actorSystem: ActorSystem)
+                                    (implicit executionContext: ExecutionContext): Future[Done] = {
+    pattern.after(5 days, actorSystem.scheduler)(Future.successful(Done))
+  }
+
 }
