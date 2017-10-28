@@ -14,17 +14,18 @@ object Server extends HttpApp {
 
   override protected def routes: Route =
     path("calculate") {
+      println("calculate")
       get {
         parameter("expression") { expression => {
           println(s"expression we get from client: $expression")
           val parser = new ExpressionParser(expression)
           parser.parseExpression() match {
             case Success(parsed) =>
-              println(s"parsed expres: $parsed")
+              println(s"parsed expression: $parsed")
               complete(StatusCodes.OK)
             case Failure(error) =>
-              println(s"error: $error")
-              complete(StatusCodes.BadRequest -> error)
+              println(s"error: ${error.getMessage}")
+              complete(StatusCodes.BadRequest -> error.getMessage)
           }
         }
         }
