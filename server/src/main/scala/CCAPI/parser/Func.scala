@@ -1,7 +1,7 @@
 package CCAPI.parser
 
 class Func(funcName: String, funcParams: Array[String], funcBody: Either[String, Func]) {
-  override def toString: String = funcName + ", params: " + funcParams.mkString(",") + ", body: " + funcBody
+  override def toString: String = s"$funcName, params: ${funcParams.mkString(",")}, body: $funcBody"
 }
 
 object Func {
