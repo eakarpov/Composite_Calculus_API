@@ -4,22 +4,18 @@ import scala.util.{Failure, Success, Try}
 
 class ExpressionParser(expression: String) {
 
-  implicit def convertToException(msg: String): Throwable = {
-    new IllegalArgumentException(msg)
-  }
-
-  def parseFunc(func: String): Either[String, Func] = {
+  private def parseFunc(func: String): Either[String, Func] = {
     val funcBodyRE = "(.*)\\(\\((.*)\\)=>\\{(.*)\\}\\)".r
     val funcSimpleBodyRE = "\\((.*)\\)=>\\{(.*)\\}".r
     println(func)
     val (funcName, funcParams, funcBody) = func match {
-      case funcBodyRE(x,y,z) => (x,y.split(','),z)
-      case funcSimpleBodyRE(x,y) => ("", x.split(','), y)
+      case funcBodyRE(x, y, z) => (x, y.split(','), z)
+      case funcSimpleBodyRE(x, y) => ("", x.split(','), y)
       case _ => return Left(func)
     }
-    if (funcName == "") return Right(new Func("", funcParams, Left(funcBody)))
+    if (funcName == "") return Right(Func("", funcParams, Left(funcBody)))
     val result = parseFunc(funcBody)
-    Right(new Func(funcName, funcParams, result))
+    Right(Func(funcName, funcParams, result))
   }
 
   def parseExpression(): Try[Func] = {
@@ -42,6 +38,7 @@ class ExpressionParser(expression: String) {
     }
     val result = parseFunc(funcBody)
     println(result)
-    Success(new Func("do", arguments, result))
+    Success(Func("do", arguments, result))
   }
+
 }
