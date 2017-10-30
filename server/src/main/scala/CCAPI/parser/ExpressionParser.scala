@@ -4,28 +4,40 @@ import scala.util.{Failure, Success, Try}
 
 class ExpressionParser(expression: String) {
 
-  private def parseFunc(func: String): Either[String, Func] = {
+  private def parseFunc(func: String): Either[String, Either[Func,List[Func]]] = {
     val funcBodyRE = "(.*)\\(\\((.*)\\)=>\\{(.*)\\}\\)".r
     val funcSimpleBodyRE = "\\((.*)\\)=>\\{(.*)\\}".r
+    val composedFuncRE = "\\.".r
     println(func)
     val (funcName, funcParams, funcBody) = func match {
-      case funcBodyRE(x, y, z) => (x, y.split(','), z)
-      case funcSimpleBodyRE(x, y) => ("", x.split(','), y)
+      case funcBodyRE(x, y, z) => (x, y.split(',').toList, z)
+      case funcSimpleBodyRE(x, y) => ("", x.split(',').toList, y)
+      case composedFuncRE(x) => ("", Nil, x.split("."))
       case _ => return Left(func)
     }
-    if (funcName == "") return Right(Func("", funcParams, Left(funcBody)))
-    val result = parseFunc(funcBody)
-    Right(Func(funcName, funcParams, result))
+    funcBody match {
+      case x: Array[String] => {
+        val result = Nil
+        x.foreach(el => result :+ parseFunc(el))
+        Right(Right(result)) //Need to be [Func] available also
+      }
+      case x: String => {
+        if (funcName == "") return Right(Left(Func("", funcParams, Left(x))))
+        val result = parseFunc(x)
+        Right(Left(Func(funcName, funcParams, result)))
+      }
+    }
   }
 
   def parseExpression(): Try[Func] = {
-    val (scope, func) = expression.split('.') match {
+    val expr = expression.filter(!_.isWhitespace)
+    val (scope, func) = expr.split('.') match {
       case Array(x, y, _*) => (x, y)
       case _ => return Failure("wrong input")
     }
     val outerRE = "with\\((.*)\\)".r
     val arguments = scope match {
-      case outerRE(args) => args.split(',')
+      case outerRE(args) => args.split(',').toList
       case _ => return Failure("wrong param value")
     }
     val outerFuncRE = "(.+?)\\((.+)\\)".r
@@ -40,5 +52,4 @@ class ExpressionParser(expression: String) {
     println(result)
     Success(Func("do", arguments, result))
   }
-
 }
