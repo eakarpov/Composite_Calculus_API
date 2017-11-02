@@ -1,31 +1,36 @@
 package CCAPI.parser
 
+import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}
 
-class ExpressionParser(expression: String) {
+trait RegExps {
+  val funcBodyRE: Regex = "(.*)\\(\\((.*)\\)=>\\{(.*)\\}\\)".r
+  val funcSimpleBodyRE: Regex = "\\((.*)\\)=>\\{(.*)\\}".r
+  val outerRE: Regex = "with\\((.*)\\)".r
+  val outerFuncRE: Regex = "(.+?)\\((.+)\\)".r
+}
 
-  private def parseFunc(func: String): Either[String, Either[Func,List[Func]]] = {
-    val funcBodyRE = "(.*)\\(\\((.*)\\)=>\\{(.*)\\}\\)".r
-    val funcSimpleBodyRE = "\\((.*)\\)=>\\{(.*)\\}".r
-    val composedFuncRE = "\\.".r
-    println(func)
+class ExpressionParser(expression: String) extends RegExps {
+
+  private def parseFunc(func: String): Either[String, Vector[Func]] = {
+
     val (funcName, funcParams, funcBody) = func match {
-      case funcBodyRE(x, y, z) => (x, y.split(',').toList, z)
-      case funcSimpleBodyRE(x, y) => ("", x.split(',').toList, y)
-      case composedFuncRE(x) => ("", Nil, x.split("."))
+      case funcBodyRE(x, y, z) => (Some(x), y.split(',').toVector, Left(z))
+      case funcSimpleBodyRE(x, y) => (None, x.split(',').toVector, Left(y))
+      case funcAsString if funcAsString.contains('.') => (None, Vector[String](), Right(funcAsString.split(".").toVector))
       case _ => return Left(func)
     }
+
     funcBody match {
-      case x: Array[String] => {
-        val result = Nil
-        x.foreach(el => result :+ parseFunc(el))
-        Right(Right(result)) //Need to be [Func] available also
-      }
-      case x: String => {
-        if (funcName == "") return Right(Left(Func("", funcParams, Left(x))))
-        val result = parseFunc(x)
-        Right(Left(Func(funcName, funcParams, result)))
-      }
+      case Right(vector) => Right(vector.map(parseFunc).foldLeft(Vector[Func]()) {
+        (a, b) => b match {
+          case Right(vec) => a ++ vec
+          case _ => a
+        }
+      })
+      case Left(single) =>
+        if (funcName.isEmpty)  Right(Vector(Func(None, funcParams, Left(single))))
+        else Right(Vector(Func(funcName, funcParams, parseFunc(single))))
     }
   }
 
@@ -35,12 +40,10 @@ class ExpressionParser(expression: String) {
       case Array(x, y, _*) => (x, y)
       case _ => return Failure("wrong input")
     }
-    val outerRE = "with\\((.*)\\)".r
-    val arguments = scope match {
-      case outerRE(args) => args.split(',').toList
+    val arguments: Vector[String] = scope match {
+      case outerRE(args) => args.split(',').toVector
       case _ => return Failure("wrong param value")
     }
-    val outerFuncRE = "(.+?)\\((.+)\\)".r
     val (funcName, funcBody) = func match {
       case outerFuncRE(x, y) => (x, y)
       case _ => return Failure("wrong func value")
@@ -49,7 +52,6 @@ class ExpressionParser(expression: String) {
       return Failure("wrong func name")
     }
     val result = parseFunc(funcBody)
-    println(result)
-    Success(Func("do", arguments, result))
+    Success(Func(Some("do"), arguments, result))
   }
 }
