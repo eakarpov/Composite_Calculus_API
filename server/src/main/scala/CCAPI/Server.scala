@@ -34,7 +34,6 @@ object Server extends HttpApp {
                   builder.append(")")
                   val inParams: String = builder.mkString("")
                   val func: String = s"($inParams => $body)"
-                  println(x)
                   params match {
                     case CalcParams(calc) => {
                       val calculation: String = s"$func.apply${calc.mkString("(", ",", ")")}"
@@ -44,7 +43,10 @@ object Server extends HttpApp {
                     case _ => complete(StatusCodes.BadRequest)
                   }
                 }
-                case _ => complete(StatusCodes.BadRequest)
+                case _ => {
+                  println(head)
+                  complete(StatusCodes.BadRequest)
+                }
               }
               case _ => complete(StatusCodes.BadRequest)
             }

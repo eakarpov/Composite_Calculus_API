@@ -2,18 +2,15 @@ package CCAPI.parser
 
 import org.parboiled2._
 
-import scala.collection.mutable
-import scala.util.{Failure, Success, Try}
-
-sealed trait Func
-case class ComputingProcess(params: CalcParams, functions: List[Func])
+case class ComputingProcess(params: CalcParams, functions: List[Calculation])
 case class CalcParams(list: List[Int])
 
-case class ThenFunc(input: List[String], body: Func) extends Func
-case class ComposeFunc(input: List[String], body: Func) extends Func
-case class ZipFunc(input: List[String], body: Func) extends Func
-case class PairFunc(input: List[String], body: Func) extends Func
-case class Function(input: List[String], body: String) extends Func
+sealed trait Calculation
+case class Then(input: List[String], body: List[Calculation]) extends Calculation
+case class Compose(body: List[Calculation]) extends Calculation
+case class Zip(body: List[Calculation]) extends Calculation
+case class Pair(body: List[Calculation]) extends Calculation
+case class Func(input: List[String], body: String) extends Calculation
 
 class CompositeParser(val input: ParserInput) extends Parser {
   def InputLine: Rule1[ComputingProcess] = rule { Expression ~ EOI }
@@ -25,44 +22,33 @@ class CompositeParser(val input: ParserInput) extends Parser {
   }
   def ParamsArr: Rule1[Seq[Int]] = rule { zeroOrMore(Number).separatedBy(',') }
 
-  def MainFunc: Rule1[List[Func]] = rule {
-    "do" ~ '(' ~ MainFuncBody ~ ')' ~> ((s: Seq[Func]) => s.toList)
+  def MainFunc: Rule1[List[Calculation]] = rule {
+    "do" ~ '(' ~ MainFuncBody ~ ')'
   }
-  def MainFuncBody: Rule1[Seq[Func]] = rule { oneOrMore(Func).separatedBy('.') }
+  def MainFuncBody: Rule1[List[Calculation]] = rule {
+    oneOrMore(Calc).separatedBy('.') ~> ((s: Seq[Calculation]) => s.toList)
+  }
 
-  def Func: Rule1[Func] = rule {
+  def Calc: Rule1[Calculation] = rule {
     ThenFunc | ComposeFunc | ZipFunc | PairFunc | Function
   }
+  def ThenFunc: Rule1[Then] = rule { "then" ~ '(' ~ FunctionParams ~ "=>" ~ MainFuncBody ~ ')' ~> Then }
+  def ComposeFunc: Rule1[Compose] = rule { "compose" ~ '(' ~ FuncList ~ ')' ~> Compose }
+  def ZipFunc: Rule1[Zip] = rule { "zip" ~ '(' ~ FuncList ~ ')' ~> Zip }
+  def PairFunc: Rule1[Pair] = rule { "pair" ~ '(' ~ FuncList ~ ')' ~> Pair }
+  def Function: Rule1[Func] = rule { '(' ~ FuncInput ~ ')' ~ "=>" ~ FunctionBody ~> Func }
 
-  def ThenFunc: Rule1[Func] = rule {
-      "then" ~ '(' ~  FunctionParams ~ "=>" ~ MainFuncBody ~ ')' ~> ThenFunc
-  }
-
-  def ComposeFunc: Rule1[Func] = rule {
-     "compose" ~ '(' ~ FuncList ~ ')' ~> ComposeFunc
-  } 
-  
-  def ZipFunc: Rule1[Func] = rule {
-     "zip" ~ '(' ~ FuncList ~ ')' ~> ZipFunc
-  }
-  
-  def PairFunc: Rule1[Func] = rule {
-    "pair" ~ '(' ~ FuncList ~ ')' ~> PairFunc
-  }
-  
-  def Function: Rule1[Func] = rule {
-     "" ~ '(' ~ FunctionParams ~ "=>" ~ FunctionBody ~ ')' ~> Function
-  }
-
-  def FuncList: Rule1[List[Func]] = rule {
-    oneOrMore(Func).separatedBy(',') ~> ((s: Seq[Func]) => s.toList)
+  def FuncList: Rule1[List[Calculation]] = rule {
+    oneOrMore(Calc).separatedBy(",") ~> ((s: Seq[Calculation]) => s.toList)
   }
 
   def FunctionParams: Rule1[List[String]] = rule { '(' ~ FuncInput ~ ')' }
   def FuncInput: Rule1[List[String]] = rule { capture(Input) ~> ((inp: String) => inp.split(',').toList) }
   def Input: Rule0 = rule { zeroOrMore(CharPredicate.LowerAlpha).separatedBy(',') }
   def FunctionBody: Rule1[String] = rule { capture(Body) }
-  def Body: Rule0 = rule { oneOrMore(CharPredicate.LowerAlpha ++ CharPredicate.Digit ++ "+" ++ "-" ++ "*" ++ "/") }
+  def Body: Rule0 = rule {
+   oneOrMore(CharPredicate.LowerAlpha ++ CharPredicate.Digit ++ "+" ++ "-" ++ "*" ++ "/")
+  }
 
   def Number: Rule1[Int] = rule { capture(Digits) ~> ((chars: String) => chars.toInt) }
   def Digits: Rule0 = rule { oneOrMore(CharPredicate.Digit) }
