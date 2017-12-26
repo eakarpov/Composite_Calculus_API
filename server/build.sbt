@@ -43,12 +43,18 @@ scalacOptions ++= Seq(
   "-Ywarn-nullary-override",           // Warn when non-nullary `def f()' overrides nullary `def f'.
   "-Ywarn-nullary-unit",               // Warn when nullary methods return Unit.
   "-Ywarn-numeric-widen",              // Warn when numerics are widened.
-  "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
+  "-Ywarn-value-discard",              // Warn when non-Unit expression results are unused.
+  "-Xplugin-require:macroparadise"
 )
+
+ addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M10" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % "10.0.10",
   "com.typesafe.akka" %% "akka-http-testkit" % "10.0.10" % Test,
-  "org.scalatest" %% "scalatest" % "3.0.4" % Test
+  "org.scalatest" %% "scalatest" % "3.0.4" % Test,
+  "org.parboiled" %% "parboiled" % "2.1.4",
+  "org.scalameta" %% "scalameta" % "2.1.2",
+  "org.scala-lang" % "scala-compiler" % "2.12.3"
 )
         
