@@ -12,7 +12,6 @@ import scala.meta._
 import org.scalameta.logger
 import CCAPI.parser._
 import org.parboiled2._
-import scala.collection.mutable
 
 object Server extends HttpApp {
 
@@ -25,27 +24,16 @@ object Server extends HttpApp {
           val res: Try[ComputingProcess] = parser.InputLine.run()
           res match {
             case Success(x) => x match {
-              case ComputingProcess(params, head :: _) => head match {
-                case Func(input, body) => {
-                  var builder = mutable.StringBuilder.newBuilder
-                  builder.append("(")
-                  input.foreach(in => builder.append(s"$in:Int,"))
-                  builder = builder.dropRight(1)
-                  builder.append(")")
-                  val inParams: String = builder.mkString("")
-                  val func: String = s"($inParams => $body)"
-                  params match {
-                    case CalcParams(calc) => {
-                      val calculation: String = s"$func.apply${calc.mkString("(", ",", ")")}"
-                      println(Computation.evalSync[Int](calculation))
-                      complete(StatusCodes.OK)
-                    }
-                    case _ => complete(StatusCodes.BadRequest)
+              case ComputingProcess(params, funcs) => {
+                params match {
+                  case CalcParams(calc): {
+                    val cProcess = Builder.parseCP(funcs, new CompositeProcess(calc))
+                    val index = Store.addProcess(cProcess)
+                    complete(StatusCodes.OK, index)
                   }
-                }
-                case _ => {
-                  println(head)
-                  complete(StatusCodes.BadRequest)
+                  case _: {
+                    complete(StatusCodes.BadRequest)
+                  }
                 }
               }
               case _ => complete(StatusCodes.BadRequest)
@@ -58,6 +46,20 @@ object Server extends HttpApp {
             }
           }
         }
+      }
+    }
+  } ~ path("execute") {
+    get {
+      parameter("type", "id") { rType, id => {
+        rType match {
+          case "async" | "parallel": {
+            val process = Store.getProcess(id)
+            val res = process.execute(type)
+            complete(StatusCodes.OK, res)
+          }
+          case _: complete(StatusCodes.BadRequest)
+        }
+      }
       }
     }
   }
