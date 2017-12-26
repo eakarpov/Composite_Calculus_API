@@ -1,4 +1,4 @@
-package CCAPI.parser
+package CCAPI.builder
 
 import scala.collection.mutable
 import scala.reflect.runtime.currentMirror

@@ -11,6 +11,7 @@ import scala.meta.parsers._
 import scala.meta._
 import org.scalameta.logger
 import CCAPI.parser._
+import CCAPI.builder._
 import org.parboiled2._
 
 object Server extends HttpApp {

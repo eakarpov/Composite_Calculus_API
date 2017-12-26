@@ -1,4 +1,4 @@
-package CCAPI.parser
+package CCAPI.builder
 
 class CompositeProcess(val args: List[Int]) {
   val func: List[SubProcess] 
