@@ -28,7 +28,11 @@ object Builder {
   }
 
   def buildThen(input, body) {
-    val sp = new ThenFunction(buildFunc(input, body))
+    val cp = new CompositeSubprocess(input)
+    for ( x <- body) {
+      cp.addElem(Definer(x))
+    }
+    val sp = new ThenFunction(cp)
     sp
   }
 

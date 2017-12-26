@@ -8,6 +8,14 @@ class CompositeProcess(val args: List[Int]) {
   }
 }
 
+class CompositeSubprocess(val args: List[String]) {
+  val elems: List[SubProcess] = Nil
+
+  def addSubProcess(subProcesses:SubProcess) {
+    this.elems = subProcess
+  }
+}
+
 sealed trait SubProcess(val elems = Nil)
 
 class CompositeFunction extends SubProcess {
@@ -16,7 +24,7 @@ class CompositeFunction extends SubProcess {
   }
 }
 
-class ThenFunction(val sp: SubProcess) extends SubProcess
+class ThenFunction(val cp: CompositeSubprocess) extends SubProcess
 
 class PairFunction extends SubProcess {
    def addElem(elem: SubProcess): Unit {
