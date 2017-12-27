@@ -14,9 +14,8 @@ object Builder {
     builder.append(")")
     val inParams: String = builder.mkString("")
     val func: String = s"($inParams => $body)"
-    // val calculation: String = s"$func.apply${calc.mkString("(", ",", ")")}"
-    val toolbox = currentMirror.mkToolBox()
-    new SimpleFunction(toolbox.parse(func))
+    // TODO: Int* - how to evaluate different number of arguments
+    new SimpleFunction(Computation.evalSync[Int* => Int](func))
   }
 
   def collectSP(

@@ -22,4 +22,4 @@ class PairFunction extends SubProcess with WithSubProcesses
 
 class ZipFunction extends SubProcess with WithSubProcesses
 
-class SimpleFunction(val func: Int => Int) extends SubProcess
+class SimpleFunction(val func: Int* => Int) extends SubProcess
