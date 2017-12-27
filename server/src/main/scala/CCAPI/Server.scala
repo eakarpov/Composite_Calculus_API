@@ -49,7 +49,7 @@ object Server extends HttpApp {
     }
   } ~ path("execute") {
     get {
-      parameters('rType.as[String], 'id.as[Int]) { (rType, id) => {
+      parameters(('rType.as[String], 'id.as[Int])) { (rType, id) => {
         rType match {
           case "async" | "parallel" => {
             val process = Store.getProcess(id)
