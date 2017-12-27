@@ -20,7 +20,7 @@ object Server extends HttpApp {
     path("calculate") {
       println("calculate")
       get {
-        parameter("expression") { expression => {
+        parameters(('rType.as[String], 'expression.as[String])) { (expression, rType) => {
           val parser = new CompositeParser("with(2,5).do(compose((a,b)=>a+b+1))")
           val res: Try[ComputingProcess] = parser.InputLine.run()
           res match {
@@ -29,8 +29,8 @@ object Server extends HttpApp {
                 params match {
                   case CalcParams(calc) => {
                     val cProcess = Builder.buildCP(funcs, new CompositeProcess(calc))
-                    val index = Store.addProcess(cProcess)
-                    complete(StatusCodes.OK -> index.toString)
+                    // val res = process.execute(rType)
+                    complete(StatusCodes.OK)
                   }
                   case _ => complete(StatusCodes.BadRequest)
                 }
@@ -45,20 +45,6 @@ object Server extends HttpApp {
             }
           }
         }
-      }
-    }
-  } ~ path("execute") {
-    get {
-      parameters(('rType.as[String], 'id.as[Int])) { (rType, id) => {
-        rType match {
-          case "async" | "parallel" => {
-            val process = Store.getProcess(id)
-            // val res = process.execute(rType)
-            complete(StatusCodes.OK -> "")
-          }
-          case _ => complete(StatusCodes.BadRequest)
-        }
-      }
       }
     }
   }
