@@ -7,6 +7,7 @@ object Computation {
   def evalSync[A](string: String): A = {
     val toolbox = currentMirror.mkToolBox()
     val tree = toolbox.parse(string)
+    println(tree)
     toolbox.eval(tree).asInstanceOf[A]
   }
 }

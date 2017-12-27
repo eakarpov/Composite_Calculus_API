@@ -12,6 +12,7 @@ import scala.meta._
 import org.scalameta.logger
 import CCAPI.parser._
 import CCAPI.builder._
+import CCAPI.executor._
 import org.parboiled2._
 
 object Server extends HttpApp {
@@ -21,7 +22,7 @@ object Server extends HttpApp {
       println("calculate")
       get {
         parameters(('rType.as[String], 'expression.as[String])) { (expression, rType) => {
-          val parser = new CompositeParser("with(2,5).do(compose((a,b)=>a+b+1))")
+          val parser = new CompositeParser("with(1,2).do(compose((a)=>a+2,(b)=>2+3))")
           val res: Try[ComputingProcess] = parser.InputLine.run()
           res match {
             case Success(x) => x match {
@@ -29,7 +30,8 @@ object Server extends HttpApp {
                 params match {
                   case CalcParams(calc) => {
                     val cProcess = Builder.buildCP(funcs, new CompositeProcess(calc))
-                    // val res = process.execute(rType)
+                    val res = Executor.execute(cProcess, rType)
+                    println(res)
                     complete(StatusCodes.OK)
                   }
                   case _ => complete(StatusCodes.BadRequest)

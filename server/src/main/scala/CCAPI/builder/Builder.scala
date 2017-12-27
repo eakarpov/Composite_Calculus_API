@@ -15,14 +15,16 @@ object Builder {
     val inParams: String = builder.mkString("")
     val func: String = s"($inParams => $body)"
     // TODO: Int* - how to evaluate different number of arguments
-    new SimpleFunction(Computation.evalSync[Int* => Int](func))
+    new SimpleFunction(Computation.evalSync[Int => Int](func))
   }
 
   def collectSP(
     body: List[Calculation], 
     collector: List[SubProcess]): List[SubProcess] = {
-      val head::tail = body
-      if (body == Nil) collector else collectSP(tail, collector :+ Definer(head))
+      if (body == Nil) collector else {
+        val head::tail = body
+        collectSP(tail, collector :+ Definer(head))
+    }
   }
 
   def buildCompose(body: List[Calculation]): CompositeFunction = {
