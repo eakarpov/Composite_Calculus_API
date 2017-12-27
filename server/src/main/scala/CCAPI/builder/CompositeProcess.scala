@@ -1,41 +1,25 @@
 package CCAPI.builder
 
-class CompositeProcess(val args: List[Int]) {
-  val func: List[SubProcess] 
+trait WithSubProcesses {
+  var elems: List[SubProcess] = Nil
 
-  def addSubProcesses(subProcesses: List[SubProcess]) {
-    this.func = subProcesses
+  def addSubProcesses(subProcesses: List[SubProcess]) = {
+    this.elems = subProcesses
   }
 }
 
-class CompositeSubprocess(val args: List[String]) {
-  val elems: List[SubProcess] = Nil
+class CompositeProcess(val args: List[Int]) extends WithSubProcesses
 
-  def addSubProcess(subProcesses:SubProcess) {
-    this.elems = subProcess
-  }
-}
+class CompositeSubprocess(val args: List[String]) extends WithSubProcesses
 
-sealed trait SubProcess(val elems = Nil)
+sealed trait SubProcess
 
-class CompositeFunction extends SubProcess {
-   def addElem(elem: SubProcess): Unit {
-    this.elems :+ elem
-  }
-}
+class CompositeFunction extends SubProcess with WithSubProcesses
 
 class ThenFunction(val cp: CompositeSubprocess) extends SubProcess
 
-class PairFunction extends SubProcess {
-   def addElem(elem: SubProcess): Unit {
-    this.elems :+ elem
-  }
-}
+class PairFunction extends SubProcess with WithSubProcesses
 
-class ZipFunction extends SubProcess {
-   def addElem(elem: SubProcess): Unit {
-    this.elems :+ elem
-  }
-}
+class ZipFunction extends SubProcess with WithSubProcesses
 
 class SimpleFunction(val func: Int => Int) extends SubProcess

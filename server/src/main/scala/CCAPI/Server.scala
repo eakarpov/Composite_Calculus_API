@@ -27,14 +27,12 @@ object Server extends HttpApp {
             case Success(x) => x match {
               case ComputingProcess(params, funcs) => {
                 params match {
-                  case CalcParams(calc): {
-                    val cProcess = Builder.parseCP(funcs, new CompositeProcess(calc))
+                  case CalcParams(calc) => {
+                    val cProcess = Builder.buildCP(funcs, new CompositeProcess(calc))
                     val index = Store.addProcess(cProcess)
-                    complete(StatusCodes.OK, index)
+                    complete(StatusCodes.OK -> index.toString)
                   }
-                  case _: {
-                    complete(StatusCodes.BadRequest)
-                  }
+                  case _ => complete(StatusCodes.BadRequest)
                 }
               }
               case _ => complete(StatusCodes.BadRequest)
@@ -51,14 +49,14 @@ object Server extends HttpApp {
     }
   } ~ path("execute") {
     get {
-      parameter("type", "id") { rType, id => {
+      parameters('rType.as[String], 'id.as[Int]) { (rType, id) => {
         rType match {
-          case "async" | "parallel": {
+          case "async" | "parallel" => {
             val process = Store.getProcess(id)
-            val res = process.execute(type)
-            complete(StatusCodes.OK, res)
+            // val res = process.execute(rType)
+            complete(StatusCodes.OK -> "")
           }
-          case _: complete(StatusCodes.BadRequest)
+          case _ => complete(StatusCodes.BadRequest)
         }
       }
       }

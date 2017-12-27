@@ -1,15 +1,17 @@
 package CCAPI.parser
 
-object Store {
-  private var _list: List[Any] = Nil
+import CCAPI.builder._
 
-  def addProcess(process): Int {
-    val nextIndex = Store._list.size()
+object Store {
+  private var _list: List[CompositeProcess] = Nil
+
+  def addProcess(process: CompositeProcess): Int = {
+    val nextIndex: Int = Store._list.size
     Store._list = _list :+ process
     nextIndex
   }
 
-  def getProcess(index: Int) {
-    Store._list[].getOrElse(index)
+  def getProcess(index: Int): CompositeProcess = {
+    Store._list(index)
   }
 }
